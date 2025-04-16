@@ -1,0 +1,177 @@
+Q1
+package com.example.factorial;
+
+import androidx.appcompat.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+import java.math.BigInteger;
+
+public class MainActivity extends AppCompatActivity {
+
+    private EditText numberEditText;
+    private Button calculateButton;
+    private TextView resultTextView;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        numberEditText = findViewById(R.id.numberEditText);
+        calculateButton = findViewById(R.id.calculateButton);
+        resultTextView = findViewById(R.id.resultTextView);
+
+        calculateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                calculateFactorial();
+            }
+        });
+    }
+
+    private void calculateFactorial() {
+
+        String inputStr = numberEditText.getText().toString().trim();
+
+        if (inputStr.isEmpty()) {
+            Toast.makeText(this, "Please enter a number", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+            int number = Integer.parseInt(inputStr);
+
+            if (number > 50) {
+                Toast.makeText(this, "Please enter a number less than or equal to 50", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (number < 0) {
+                Toast.makeText(this, "Factorial is not defined for negative numbers", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            BigInteger factorial = calculateFactorialBigInteger(number);
+
+            String resultText = number + "! = " + factorial.toString();
+            resultTextView.setText(resultText);
+
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Invalid input. Please enter a valid number", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private BigInteger calculateFactorialBigInteger(int n) {
+        BigInteger result = BigInteger.ONE;
+        for (int i = 2; i <= n; i++) {
+            result = result.multiply(BigInteger.valueOf(i));
+        }
+        return result;
+    }
+}
+Q2
+package com.example.loginform;
+
+import androidx.appcompat.app.AppCompatActivity;
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Patterns;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public class MainActivity extends AppCompatActivity {
+
+    private EditText emailEditText, passwordEditText;
+    private Button loginButton;
+    private TextView signUpTextView;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        emailEditText = findViewById(R.id.emailEditText);
+        passwordEditText = findViewById(R.id.passwordEditText);
+        loginButton = findViewById(R.id.loginButton);
+        signUpTextView = findViewById(R.id.signUpTextView);
+
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                validateAndLogin();
+            }
+        });
+
+        signUpTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(MainActivity.this, "Sign Up clicked", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void validateAndLogin() {
+        String email = emailEditText.getText().toString().trim();
+        String password = passwordEditText.getText().toString().trim();
+
+        // Validate email
+        if (TextUtils.isEmpty(email)) {
+            emailEditText.setError("Email is required");
+            emailEditText.requestFocus();
+            return;
+        }
+        if (!isValidEmail(email)) {
+            emailEditText.setError("Please enter a valid email address");
+            emailEditText.requestFocus();
+            return;
+        }
+
+        // Validate password
+        if (TextUtils.isEmpty(password)) {
+            passwordEditText.setError("Password is required");
+            passwordEditText.requestFocus();
+            return;
+        }
+        if (password.length() < 6) {
+            passwordEditText.setError("Password must be at least 6 characters");
+            passwordEditText.requestFocus();
+            return;
+        }
+
+        performLogin(email, password);
+    }
+
+    private boolean isValidEmail(String email) {
+        return Patterns.EMAIL_ADDRESS.matcher(email).matches();
+    }
+
+    private void performLogin(String email, String password) {
+
+        // Simulate delay
+        loginButton.setEnabled(false);
+        loginButton.setText("Logging in...");
+
+        loginButton.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // demo account
+                if (email.equals("user@gmail.com") && password.equals("demo123")) {
+                    Toast.makeText(MainActivity.this, "Login successful!", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(MainActivity.this, "Invalid email or password", Toast.LENGTH_LONG).show();
+                }
+
+                // Reset button 
+                loginButton.setEnabled(true);
+                loginButton.setText("LOGIN");
+            }
+        }, 1500);
+    }
+}
