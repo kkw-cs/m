@@ -1,0 +1,155 @@
+Q1
+package com.example.loginform;
+
+import androidx.appcompat.app.AppCompatActivity;
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Patterns;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public class MainActivity extends AppCompatActivity {
+
+    private EditText emailEditText, passwordEditText;
+    private Button loginButton;
+    private TextView signUpTextView;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        emailEditText = findViewById(R.id.emailEditText);
+        passwordEditText = findViewById(R.id.passwordEditText);
+        loginButton = findViewById(R.id.loginButton);
+        signUpTextView = findViewById(R.id.signUpTextView);
+
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                validateAndLogin();
+            }
+        });
+
+        signUpTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(MainActivity.this, "Sign Up clicked", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void validateAndLogin() {
+        String email = emailEditText.getText().toString().trim();
+        String password = passwordEditText.getText().toString().trim();
+
+        // Validate email
+        if (TextUtils.isEmpty(email)) {
+            emailEditText.setError("Email is required");
+            emailEditText.requestFocus();
+            return;
+        }
+        if (!isValidEmail(email)) {
+            emailEditText.setError("Please enter a valid email address");
+            emailEditText.requestFocus();
+            return;
+        }
+
+        // Validate password
+        if (TextUtils.isEmpty(password)) {
+            passwordEditText.setError("Password is required");
+            passwordEditText.requestFocus();
+            return;
+        }
+        if (password.length() < 6) {
+            passwordEditText.setError("Password must be at least 6 characters");
+            passwordEditText.requestFocus();
+            return;
+        }
+
+        performLogin(email, password);
+    }
+
+    private boolean isValidEmail(String email) {
+        return Patterns.EMAIL_ADDRESS.matcher(email).matches();
+    }
+
+    private void performLogin(String email, String password) {
+
+        // Simulate delay
+        loginButton.setEnabled(false);
+        loginButton.setText("Logging in...");
+
+        loginButton.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // demo account
+                if (email.equals("user@gmail.com") && password.equals("demo123")) {
+                    Toast.makeText(MainActivity.this, "Login successful!", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(MainActivity.this, "Invalid email or password", Toast.LENGTH_LONG).show();
+                }
+
+                // Reset button 
+                loginButton.setEnabled(true);
+                loginButton.setText("LOGIN");
+            }
+        }, 1500);
+    }
+}
+Q2
+package com.example.location;
+
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+public class MainActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_main);
+
+        Button searchbtn = findViewById(R.id.button);
+        EditText location = findViewById(R.id.location);
+
+        searchbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String locationName = location.getText().toString();
+                if (!locationName.isEmpty()) {
+                    Toast.makeText(MainActivity.this, "Please Enter a Location", Toast.LENGTH_SHORT).show();
+                }
+                searchLocation(locationName);
+            }
+        });
+    }
+    private void searchLocation(String locationName) {
+        Uri gmmIntentUri = Uri.parse("geo:0,0?q="+Uri.encode(locationName));
+        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+        mapIntent.setPackage("com.google.android.apps.maps");
+        if(mapIntent.resolveActivity(getPackageManager()) != null){
+            startActivity(mapIntent);
+        }
+        else{
+            Uri webUri = Uri.parse("https://www.google.com/maps/search/"+Uri.encode(locationName));
+            Intent webIntent = new Intent(Intent.ACTION_VIEW, webUri);
+            startActivity(webIntent);
+        }
+    }
+}
